@@ -101,11 +101,8 @@ for index_iter in range(ITER):
 
     pred_test_fdssc = []
     tic2 = time.perf_counter()
-    idx = 0
     with torch.no_grad():
         for X, y in test_iter:
-            idx += 1
-            print(idx)
             X = X.to(device)
             net.eval()  # 评估模式, 这会关闭dropout
             y_hat = net(X)
