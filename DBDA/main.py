@@ -43,7 +43,7 @@ ITER = 10
 PATCH_LENGTH = 4
 # number of training samples per class
 #lr, num_epochs, batch_size = 0.001, 200, 32
-lr, num_epochs, batch_size = 0.00050, 200, 16
+lr, num_epochs, batch_size = 0.00050, 10, 16
 #lr, num_epochs, batch_size = 0.00050, 200, 16
 #lr, num_epochs, batch_size = 0.0005, 200, 12
 #net = network.DBDA_network_drop(BAND, CLASSES_NUM)
@@ -95,20 +95,23 @@ for index_iter in range(ITER):
     train_iter, valida_iter, test_iter, all_iter = generate_iter(TRAIN_SIZE, train_indices, TEST_SIZE, test_indices, TOTAL_SIZE, total_indices, VAL_SIZE,
                   whole_data, PATCH_LENGTH, padded_data, INPUT_DIMENSION, batch_size, gt)
 
-    tic1 = time.clock()
+    tic1 = time.perf_counter()
     train.train(net, train_iter, valida_iter, loss, optimizer, device, epochs=num_epochs)
-    toc1 = time.clock()
+    toc1 = time.perf_counter()
 
     pred_test_fdssc = []
-    tic2 = time.clock()
+    tic2 = time.perf_counter()
+    idx = 0
     with torch.no_grad():
         for X, y in test_iter:
+            idx += 1
+            print(idx)
             X = X.to(device)
             net.eval()  # 评估模式, 这会关闭dropout
             y_hat = net(X)
             # print(net(X))
             pred_test_fdssc.extend(np.array(net(X).cpu().argmax(axis=1)))
-    toc2 = time.clock()
+    toc2 = time.perf_counter()
     collections.Counter(pred_test_fdssc)
     gt_test = gt[test_indices] - 1
 
